@@ -51,14 +51,8 @@ namespace MethodOf
         {
             try
             {
-                var m = typeof(C1).GetMethods().Select(x => new { x.Name, Params = x.GetParameters().Select(y => y.Name).ToList() }).ToDictionary(y=>y.Name, y=>y.Params);
-                foreach (var m0 in m)
-                {
-                    if (m0.Value.Any())
-                    {
-                        Console.WriteLine($"{m0.Key} {m0.Value.First()}");
-                    }
-                }
+                var methodAndParams = typeof(C1).GetMethods().Where(m => m.Name == "Print").Select(x => new { x.Name, Params = x.GetParameters().Select(y => y.Name).ToList() }).First();
+                Console.WriteLine($"{methodAndParams.Params[0]}");
             }
             catch (Exception ex)
             {
