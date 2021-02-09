@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Threading.Tasks;
 using System.Reflection;
+using FluentAssertions;
 
 namespace MethodOf
 {
@@ -39,10 +40,15 @@ namespace MethodOf
 
     class C1 : I1
     {
-        public void Print(string str2)
+        public void Print(string blob21)
         {
-            throw new NotImplementedException();
+            throw new ArgumentNullException("hello");
         }
+    }
+
+    class X
+    {
+
     }
 
     class Program
@@ -51,8 +57,12 @@ namespace MethodOf
         {
             try
             {
-                var methodAndParams = typeof(C1).GetMethods().Where(m => m.Name == "Print").Select(x => new { x.Name, Params = x.GetParameters().Select(y => y.Name).ToList() }).First();
-                Console.WriteLine($"{methodAndParams.Params[0]}");
+                var paramName = typeof(C1).GetMethods().Where(m => m.Name == "Print").SelectMany(x => x.GetParameters().Select(y => y.Name)).First();
+
+                var c1 = new C1();
+
+                Action act = () => c1.Print("hello");
+                act.Should().ThrowExactly<ArgumentNullException>().WithMessage($"*Parameter name: {paramName}");
             }
             catch (Exception ex)
             {
